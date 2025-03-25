@@ -17,3 +17,8 @@ variable "infisical_path" {
   description = "Infisical secrets path"
   type        = string
 }
+
+variable "bucket" {
+  description = "GCS bucket name"
+  type        = string
+}
