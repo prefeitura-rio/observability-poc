@@ -25,6 +25,7 @@
           with pkgs;
           mkShell {
             packages = [
+              just
               python313
               terraform
               uv

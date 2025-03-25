@@ -1,0 +1,8 @@
+init:
+    @terraform init -backend-config "bucket=datario-terraform" -upgrade
+
+plan:
+    @terraform plan -var-file observability-poc.tfvars -out=observability-poc.tfplan
+
+apply:
+    @terraform apply "observability-poc.tfplan"
