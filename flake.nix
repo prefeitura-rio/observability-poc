@@ -26,18 +26,9 @@
           mkShell {
             packages = [
               python313
+              terraform
               uv
             ];
-
-            shellHook = ''
-              VENV="./.venv/bin/activate"
-
-              if [[ ! -f $VENV ]]; then
-                ${pkgs.uv}/bin/uv venv
-              fi
-
-              source "$VENV"
-            '';
 
             LD_LIBRARY_PATH = lib.makeLibraryPath [
               stdenv.cc.cc.lib
