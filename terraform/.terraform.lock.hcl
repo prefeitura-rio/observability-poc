@@ -59,7 +59,8 @@ provider "registry.terraform.io/hashicorp/kubernetes" {
 }
 
 provider "registry.terraform.io/infisical/infisical" {
-  version = "0.15.2"
+  version     = "0.15.2"
+  constraints = "0.15.2"
   hashes = [
     "h1:bcb6HG4q0dcJTkGqizPk4iAcArC7KQa+oJT/IT9FrzQ=",
     "zh:040c6d52ccbe24be2101b52172f5179b719398dacbbae9d300004abd36c20a05",

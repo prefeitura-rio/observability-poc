@@ -1,0 +1,11 @@
+- hosts: localhost
+  become: true
+
+  roles:
+    - geerlingguy.docker
+
+  tasks:
+    - name: Run Docker Compose to launch services
+      community.docker.docker_compose_v2:
+        project_src: ~/observability
+        state: present

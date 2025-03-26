@@ -1,0 +1,10 @@
+storage:
+  type: sqlite
+  path: /data/data.db
+
+endpoints:
+  - name: app
+    url: https://google.com
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
