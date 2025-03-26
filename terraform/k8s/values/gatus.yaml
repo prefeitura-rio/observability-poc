@@ -1,0 +1,34 @@
+ingress:
+  enabled: false
+  annotations:
+    {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  labels: {}
+  path: /
+  # pathType is only for k8s >= 1.1=
+  pathType: Prefix
+  extraPaths: []
+  hosts:
+    - gatus.local
+  tls: []
+  #  - secretName: gatus-tls
+  #    hosts:
+  #      - gatus.local
+
+persistence:
+  enabled: true
+  size: 200Mi
+  mountPath: /data
+  accessModes:
+    - ReadWriteOnce
+  finalizers:
+    - kubernetes.io/pvc-protection
+
+config:
+  endpoints:
+    - name: app
+      url: http://app.api.svc.cluster.local
+      interval: 60s
+      conditions:
+        - "[STATUS] == 200"

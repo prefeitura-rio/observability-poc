@@ -95,3 +95,7 @@ resource "google_container_node_pool" "poc" {
     }
   }
 }
+
+module "deployments" {
+  source = "./deployments"
+}
