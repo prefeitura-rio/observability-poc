@@ -75,7 +75,7 @@ resource "google_container_node_pool" "poc" {
   node_locations = ["${var.region}-a", "${var.region}-b", "${var.region}-c"]
 
   node_config {
-    service_account = "log-gke@rj-sms.iam.gserviceaccount.com"
+    service_account = "poc-gke@datario.iam.gserviceaccount.com"
     spot            = false
     machine_type    = var.machine_type.default
     disk_size_gb    = var.disk_size.small
