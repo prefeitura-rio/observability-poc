@@ -27,7 +27,7 @@ resource "google_compute_instance" "poc" {
   }
 
   metadata = {
-    ssh-keys = "observability:${var.ssh_public_key}"
+    ssh-keys = "poc:${var.ssh_public_key}"
   }
 
   provisioner "file" {
@@ -53,7 +53,7 @@ resource "google_compute_instance" "poc" {
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
-      user        = "observability"
+      user        = "poc"
       private_key = file(var.ssh_private_key)
       host        = google_compute_address.poc.address
     }
