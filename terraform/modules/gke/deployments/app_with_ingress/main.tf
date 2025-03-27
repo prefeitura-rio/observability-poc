@@ -1,15 +1,15 @@
 resource "kubernetes_namespace" "app_with_ingress" {
   metadata {
-    name = "app_with_ingress"
+    name = "app-with-ingress"
   }
 }
 
 resource "kubernetes_deployment" "app_with_ingress" {
   metadata {
-    name      = "app_with_ingress"
-    namespace = kubernetes_namespace.app.metadata[0].name
+    name      = "app-with-ingress"
+    namespace = kubernetes_namespace.app_with_ingress.metadata[0].name
     labels = {
-      app = "app_with_ingress"
+      app = "app-with-ingress"
     }
   }
 
@@ -18,21 +18,21 @@ resource "kubernetes_deployment" "app_with_ingress" {
 
     selector {
       match_labels = {
-        app = "app_with_ingress"
+        app = "app-with-ingress"
       }
     }
 
     template {
       metadata {
         labels = {
-          app = "app_with_ingress"
+          app = "app-with-ingress"
         }
       }
 
       spec {
         container {
           image = "ghcr.io/prefeitura-rio/observability-poc:latest"
-          name  = "app_with_ingress"
+          name  = "app-with-ingress"
 
           port {
             container_port = 8000
@@ -56,12 +56,12 @@ resource "kubernetes_deployment" "app_with_ingress" {
 
 resource "kubernetes_service" "app_with_ingress" {
   metadata {
-    name      = "app_with_ingress"
-    namespace = kubernetes_namespace.app.metadata[0].name
+    name      = "app-with-ingress"
+    namespace = kubernetes_namespace.app_with_ingress.metadata[0].name
   }
   spec {
     selector = {
-      app = kubernetes_deployment.app.metadata[0].labels.app
+      app = kubernetes_deployment.app_with_ingress.metadata[0].labels.app
     }
     port {
       port        = 80
