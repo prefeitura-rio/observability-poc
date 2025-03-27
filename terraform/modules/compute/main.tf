@@ -63,7 +63,7 @@ resource "google_compute_instance" "poc" {
       "sudo apt-get install -y python3 python3-pip",
       "sudo pip3 install ansible",
       "ansible-galaxy install -r ~/poc/requirements.yaml",
-      "ansible-playbook ~/observability/playbook.yaml"
+      "ansible-playbook ~/poc/playbook.yaml"
     ]
   }
 
