@@ -1,13 +1,13 @@
-resource "google_compute_network" "vpc_network" {
-  name                    = "poc-network"
+resource "google_compute_network" "poc" {
+  name                    = "poc"
   auto_create_subnetworks = false
 }
 
 resource "google_compute_subnetwork" "poc" {
-  name          = "poc-subnet"
+  name          = "poc"
   ip_cidr_range = "10.0.0.0/24"
   region        = var.region
-  network       = google_compute_network.vpc_network.id
+  network       = google_compute_network.poc.id
 
   secondary_ip_range {
     range_name    = "poc-pods"

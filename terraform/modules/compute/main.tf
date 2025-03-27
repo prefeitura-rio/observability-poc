@@ -1,11 +1,11 @@
-resource "google_compute_address" "observability" {
-  name         = "observability-ip"
+resource "google_compute_address" "poc" {
+  name         = "poc"
   region       = var.region
   address_type = "EXTERNAL"
 }
 
-resource "google_compute_instance" "observability" {
-  name         = "observability"
+resource "google_compute_instance" "poc" {
+  name         = "poc"
   machine_type = var.machine_type
   zone         = "${var.region}-a"
 
@@ -22,7 +22,7 @@ resource "google_compute_instance" "observability" {
     subnetwork = var.vpc_subnetwork
 
     access_config {
-      nat_ip = google_compute_address.observability.address
+      nat_ip = google_compute_address.poc.address
     }
   }
 
@@ -55,7 +55,7 @@ resource "google_compute_instance" "observability" {
       type        = "ssh"
       user        = "observability"
       private_key = file(var.ssh_private_key)
-      host        = google_compute_address.observability.address
+      host        = google_compute_address.poc.address
     }
 
     inline = [
