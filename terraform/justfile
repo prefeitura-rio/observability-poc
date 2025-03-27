@@ -1,8 +1,15 @@
-init:
-    @terraform init -backend-config "bucket=datario-terraform" -upgrade
+tfplan := "terraform.tfplan"
+tfvars := "terraform.tfvars"
+bucket := "bucket=datario-terraform"
 
-plan:
-    @terraform plan -var-file observability-poc.tfvars -out=observability-poc.tfplan
+@init:
+    terraform init -backend-config {{bucket}} -upgrade
 
-apply:
-    @terraform apply "observability-poc.tfplan"
+@plan:
+    terraform plan -var-file {{tfvars}} -out {{tfplan}}
+
+@apply:
+    terraform apply {{tfplan}}
+
+@destroy:
+    terraform destroy -var-file {{tfvars}}
