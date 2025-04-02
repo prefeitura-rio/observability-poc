@@ -32,7 +32,7 @@ resource "kubernetes_deployment" "app_without_ingress" {
 
       spec {
         container {
-          image = "ghcr.io/prefeitura-rio/observability-poc:latest"
+          image = "ghcr.io/prefeitura-rio/observability-poc/app:latest"
           name  = "app-without-ingress"
 
           port {

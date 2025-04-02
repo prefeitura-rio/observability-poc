@@ -1,0 +1,24 @@
+controller:
+  allowSnippetAnnotations: true
+  replicaCount: 3
+  service:
+    loadBalancerIP: ${load_balancer_ip}
+    externalTrafficPolicy: Local
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app.kubernetes.io/name
+            operator: In
+            values:
+            - ingress-nginx
+          - key: app.kubernetes.io/instance
+            operator: In
+            values:
+            - ingress-nginx
+          - key: app.kubernetes.io/component
+            operator: In
+            values:
+            - controller
+        topologyKey: "kubernetes.io/hostname"

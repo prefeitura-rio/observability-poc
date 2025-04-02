@@ -1,0 +1,44 @@
+alertmanager:
+  enabled: false
+cleanPrometheusOperatorObjectNames: true
+fullnameOverride: prometheus
+grafana:
+  enabled: false
+kubelet:
+  serviceMonitor:
+    metricRelabelings:
+    - action: replace
+      sourceLabels:
+      - node
+      targetLabel: instance
+prometheus:
+  ingress:
+    enabled: false
+  prometheusSpec:
+    replicas: 1
+    retention: 30d
+    retentionSize: 250GB
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          resources:
+            requests:
+              storage: 300G
+          storageClassName: standard
+prometheus-node-exporter:
+  prometheus:
+    monitor:
+      relabelings:
+      - action: replace
+        regex: ^(.*)$
+        replacement: $1
+        separator: ;
+        sourceLabels:
+        - __meta_kubernetes_pod_node_name
+        targetLabel: node
+      - action: replace
+        regex: (.*)
+        replacement: $1
+        sourceLabels:
+        - __meta_kubernetes_pod_node_name
+        targetLabel: kubernetes_node
