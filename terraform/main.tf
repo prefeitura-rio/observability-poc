@@ -14,6 +14,7 @@ module "gke" {
   vpc_subnetwork = module.networking.vpc_subnetwork_name
   machine_type   = local.machine_type
   disk_size      = local.disk_size
+  host           = local.host
 }
 
 module "compute" {

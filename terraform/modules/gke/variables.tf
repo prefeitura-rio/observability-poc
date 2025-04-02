@@ -33,3 +33,10 @@ variable "disk_size" {
   })
   description = "Disk size configurations"
 }
+
+variable "host" {
+  type        = string
+  nullable    = false
+  description = "Default ingress hostname"
+}
+

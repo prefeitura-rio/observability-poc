@@ -1,14 +1,13 @@
-resource "kubernetes_namespace" "app_without_ingress" {
+resource "kubernetes_namespace_v1" "app_without_ingress" {
   metadata {
     name = "app-without-ingress"
   }
 }
 
-resource "kubernetes_deployment" "app_without_ingress" {
-  depends_on = [kubernetes_namespace.app_without_ingress]
+resource "kubernetes_deployment_v1" "app_without_ingress" {
   metadata {
     name      = "app-without-ingress"
-    namespace = kubernetes_namespace.app_without_ingress.metadata[0].name
+    namespace = kubernetes_namespace_v1.app_without_ingress.metadata[0].name
     labels = {
       app = "app-without-ingress"
     }
@@ -37,6 +36,8 @@ resource "kubernetes_deployment" "app_without_ingress" {
 
           port {
             container_port = 8000
+            name           = "http"
+
           }
 
           resources {
@@ -55,19 +56,19 @@ resource "kubernetes_deployment" "app_without_ingress" {
   }
 }
 
-resource "kubernetes_service" "app_without_ingress" {
-  depends_on = [kubernetes_deployment.app_without_ingress]
+resource "kubernetes_service_v1" "app_without_ingress" {
   metadata {
     name      = "app-without-ingress"
-    namespace = kubernetes_namespace.app_without_ingress.metadata[0].name
+    namespace = kubernetes_namespace_v1.app_without_ingress.metadata[0].name
   }
   spec {
     selector = {
-      app = kubernetes_deployment.app_without_ingress.metadata[0].labels.app
+      app = kubernetes_deployment_v1.app_without_ingress.metadata[0].labels.app
     }
     port {
-      port        = 80
+      port        = 8000
       target_port = 8000
+      name        = "http"
     }
     type = "ClusterIP"
   }

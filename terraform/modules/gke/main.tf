@@ -106,7 +106,9 @@ resource "google_container_node_pool" "poc" {
 }
 
 module "deployments" {
-  source = "./deployments"
+  source         = "./deployments"
+  cluster_issuer = local.cert_manager_cluster_issuer
+  host           = var.host
 }
 
 data "google_client_config" "current" {}
