@@ -7,10 +7,10 @@ grafana:
 kubelet:
   serviceMonitor:
     metricRelabelings:
-    - action: replace
-      sourceLabels:
-      - node
-      targetLabel: instance
+      - action: replace
+        sourceLabels:
+          - node
+        targetLabel: instance
 prometheus:
   ingress:
     enabled: false
@@ -25,20 +25,27 @@ prometheus:
             requests:
               storage: 300G
           storageClassName: standard
+    additionalScrapeConfigs:
+      - job_name: "loki"
+        static_configs:
+          - targets: ["loki.prometheus.svc.cluster.local:3100"]
+      - job_name: "promtail"
+        static_configs:
+          - targets: ["promtail.prometheus.svc.cluster.local:9080"]
 prometheus-node-exporter:
   prometheus:
     monitor:
       relabelings:
-      - action: replace
-        regex: ^(.*)$
-        replacement: $1
-        separator: ;
-        sourceLabels:
-        - __meta_kubernetes_pod_node_name
-        targetLabel: node
-      - action: replace
-        regex: (.*)
-        replacement: $1
-        sourceLabels:
-        - __meta_kubernetes_pod_node_name
-        targetLabel: kubernetes_node
+        - action: replace
+          regex: ^(.*)$
+          replacement: $1
+          separator: ;
+          sourceLabels:
+            - __meta_kubernetes_pod_node_name
+          targetLabel: node
+        - action: replace
+          regex: (.*)
+          replacement: $1
+          sourceLabels:
+            - __meta_kubernetes_pod_node_name
+          targetLabel: kubernetes_node

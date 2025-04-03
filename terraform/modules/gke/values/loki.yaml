@@ -1,0 +1,54 @@
+enterprise:
+  enabled: false
+gateway:
+  basicAuth:
+    enabled: true
+    password: ${password}
+    username: ${user}
+  ingress:
+    annotations:
+      cert-manager.io/cluster-issuer: ${cert_manager_cluster_issuer}
+    enabled: true
+    hosts:
+      - host: ${domain}
+        paths:
+          - backend:
+              service:
+                name: loki-gateway
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+    ingressClassName: nginx
+    tls:
+      - hosts:
+          - ${domain}
+        secretName: ${domain_tls_secret}-tls
+loki:
+  auth_enabled: false
+  commonConfig:
+    path_prefix: /var/loki
+    replication_factor: 1
+  storage:
+    bucketNames:
+      admin: ${bucket_name}
+      chunks: ${bucket_name}
+      ruler: ${bucket_name}
+    type: gcs
+minio:
+  enabled: false
+singleBinary:
+  extraEnv:
+    - name: GOOGLE_APPLICATION_CREDENTIALS
+      value: /etc/loki_secrets/gcp_service_account.json
+  extraVolumeMounts:
+    - mountPath: /etc/loki_secrets
+      name: loki-secrets-gsa
+  extraVolumes:
+    - name: loki-secrets-gsa
+      secret:
+        items:
+          - key: gcp_service_account.json
+            path: gcp_service_account.json
+        secretName: loki-secrets-gsa
+  replicas: 1

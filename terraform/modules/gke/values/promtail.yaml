@@ -1,0 +1,7 @@
+config:
+  clients:
+    - basic_auth:
+        password: ${password}
+        username: ${user}
+      tenant_id: 1
+      url: http://loki-gateway/loki/api/v1/push

@@ -1,3 +1,7 @@
+locals {
+  host_whithout_dot = replace(var.host, ".", "-")
+}
+
 resource "kubernetes_namespace_v1" "app_with_ingress" {
   metadata {
     name = "app-with-ingress"
@@ -71,10 +75,6 @@ resource "kubernetes_service_v1" "app_with_ingress" {
     }
     type = "ClusterIP"
   }
-}
-
-locals {
-  host_whithout_dot = replace(var.host, ".", "-")
 }
 
 resource "kubernetes_ingress_v1" "app_with_ingress" {
