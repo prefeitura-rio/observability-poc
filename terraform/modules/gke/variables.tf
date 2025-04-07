@@ -40,23 +40,15 @@ variable "host" {
   description = "Default ingress hostname"
 }
 
-variable "loki_password" {
-  type        = string
-  description = "Password for Loki authentication"
-  sensitive   = true
+variable "vault" {
+  type = map(object({
+    value = string
+  }))
+
+  description = "Secrets from Infisical"
 }
 
-variable "loki_user" {
+variable "cluster_service_account" {
   type        = string
-  description = "Username for Loki authentication"
-}
-
-variable "loki_domain" {
-  type        = string
-  description = "Domain name for Loki ingress"
-}
-
-variable "loki_bucket_name" {
-  type        = string
-  description = "GCS bucket name for Loki storage"
+  description = "The GCP service account for the cluster"
 }

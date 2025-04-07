@@ -8,17 +8,15 @@ module "networking" {
 module "gke" {
   source = "./modules/gke"
 
-  project_id       = local.project_id
-  region           = local.region
-  vpc_network      = module.networking.vpc_network_name
-  vpc_subnetwork   = module.networking.vpc_subnetwork_name
-  machine_type     = local.machine_type
-  disk_size        = local.disk_size
-  host             = local.host
-  loki_password    = local.loki_password
-  loki_user        = local.loki_user
-  loki_domain      = local.loki_domain
-  loki_bucket_name = local.loki_bucket_name
+  project_id              = local.project_id
+  region                  = local.region
+  vpc_network             = module.networking.vpc_network_name
+  vpc_subnetwork          = module.networking.vpc_subnetwork_name
+  machine_type            = local.machine_type
+  disk_size               = local.disk_size
+  host                    = local.host
+  vault                   = data.infisical_secrets.gke.secrets
+  cluster_service_account = local.cluster_service_account
 }
 
 module "compute" {

@@ -35,5 +35,5 @@ variable "ssh_public_key" {
 
 variable "ssh_private_key" {
   type        = string
-  description = "The SSH private key content for the instance"
+  description = "Path to the SSH private key file"
 }

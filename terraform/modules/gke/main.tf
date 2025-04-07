@@ -19,7 +19,7 @@ resource "google_container_cluster" "poc" {
   }
 
   private_cluster_config {
-    enable_private_endpoint = true
+    enable_private_endpoint = false
     enable_private_nodes    = true
     master_ipv4_cidr_block  = "10.30.0.0/28"
   }
@@ -75,10 +75,11 @@ resource "google_container_node_pool" "poc" {
   node_locations = ["${var.region}-a", "${var.region}-b", "${var.region}-c"]
 
   node_config {
-    service_account = "poc-gke@datario.iam.gserviceaccount.com"
+    service_account = var.cluster_service_account
     spot            = false
     machine_type    = var.machine_type.default
     disk_size_gb    = var.disk_size.small
+    tags            = ["gke-node"]
 
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -97,7 +98,21 @@ resource "google_container_node_pool" "poc" {
 }
 
 module "deployments" {
-  source         = "./deployments"
-  cluster_issuer = local.cert_manager_cluster_issuer
-  host           = var.host
+  source = "./deployments"
+
+  access_token           = local.access_token
+  client_certificate     = local.client_certificate
+  client_key             = local.client_key
+  cluster_ca_certificate = local.cluster_ca_certificate
+  cluster_endpoint       = local.cluster_endpoint
+  cluster_issuer         = local.cert_manager_cluster_issuer
+  gatus_k8s_domain       = local.gatus_k8s_domain
+  host                   = var.host
+  loki_bucket_name       = local.loki_bucket_name
+  loki_k8s_domain        = local.loki_k8s_domain
+  loki_password          = local.loki_password
+  loki_user              = local.loki_user
+  node_pool              = local.node_pool.name
+  project_id             = var.project_id
+  prometheus_k8s_domain  = local.prometheus_k8s_domain
 }

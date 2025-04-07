@@ -3,8 +3,6 @@ data "infisical_secrets" "gke" {
   folder_path = var.infisical_path
 }
 
-data "google_client_config" "current" {}
-
 data "terraform_remote_state" "project_id" {
   backend   = "gcs"
   workspace = terraform.workspace

@@ -1,7 +1,3 @@
-locals {
-  host_whithout_dot = replace(var.host, ".", "-")
-}
-
 resource "kubernetes_namespace_v1" "app_with_ingress" {
   metadata {
     name = "app-with-ingress"
@@ -87,10 +83,12 @@ resource "kubernetes_ingress_v1" "app_with_ingress" {
   }
   spec {
     ingress_class_name = "nginx"
+
     tls {
       hosts       = [var.host]
-      secret_name = "${local.host_whithout_dot}-tls"
+      secret_name = "${local.host_without_dot}-tls"
     }
+
     rule {
       host = var.host
       http {

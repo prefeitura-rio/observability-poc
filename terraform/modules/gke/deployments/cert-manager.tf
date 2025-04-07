@@ -1,0 +1,18 @@
+resource "helm_release" "cert-manager" {
+  depends_on       = [var.node_pool]
+  name             = "cert-manager"
+  repository       = "https://charts.jetstack.io"
+  chart            = "cert-manager"
+  version          = "v1.17.1"
+  namespace        = "cert-manager"
+  create_namespace = true
+  set {
+    name  = "installCRDs"
+    value = "true"
+  }
+}
+
+resource "kubectl_manifest" "cluster-issuer" {
+  depends_on = [helm_release.cert-manager, helm_release.ingress-nginx]
+  yaml_body  = templatefile("${path.module}/manifests/cert-manager.yaml", { issuer = var.cluster_issuer })
+}

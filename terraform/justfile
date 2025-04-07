@@ -2,7 +2,7 @@ tfplan := "terraform.tfplan"
 tfvars := "terraform.tfvars"
 bucket := "bucket=datario-terraform"
 
-@init:
+init:
     terraform init -backend-config {{bucket}} -upgrade
 
 @plan:

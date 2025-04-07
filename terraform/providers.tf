@@ -1,8 +1,15 @@
 terraform {
+  required_version = ">= 1.11.0"
+
   backend "gcs" {
     prefix = "terraform-poc"
   }
+
   required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "6.28.0"
+    }
     infisical = {
       source  = "infisical/infisical"
       version = "0.15.2"

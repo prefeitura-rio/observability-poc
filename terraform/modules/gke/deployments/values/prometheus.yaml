@@ -1,7 +1,9 @@
 alertmanager:
   enabled: false
+
 cleanPrometheusOperatorObjectNames: true
 fullnameOverride: prometheus
+
 grafana:
   enabled: false
 kubelet:
@@ -11,6 +13,7 @@ kubelet:
         sourceLabels:
           - node
         targetLabel: instance
+
 prometheus:
   ingress:
     enabled: false
@@ -32,6 +35,7 @@ prometheus:
       - job_name: "promtail"
         static_configs:
           - targets: ["promtail.prometheus.svc.cluster.local:9080"]
+
 prometheus-node-exporter:
   prometheus:
     monitor:
