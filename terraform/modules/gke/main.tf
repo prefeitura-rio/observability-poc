@@ -1,5 +1,11 @@
-resource "google_container_cluster" "poc" {
-  name     = "poc"
+resource "google_compute_address" "poc_k8s" {
+  name         = "poc-k8s-address"
+  region       = var.region
+  address_type = "EXTERNAL"
+}
+
+resource "google_container_cluster" "poc_k8s_cluster" {
+  name     = "poc-cluster"
   location = var.region
 
   initial_node_count       = 1
@@ -57,9 +63,9 @@ resource "google_container_cluster" "poc" {
   }
 }
 
-resource "google_container_node_pool" "poc" {
-  name     = "poc"
-  cluster  = google_container_cluster.poc.name
+resource "google_container_node_pool" "poc_k8s_node_pool" {
+  name     = "poc-node-pool"
+  cluster  = google_container_cluster.poc_k8s_cluster.name
   location = var.region
 
   upgrade_settings {
@@ -77,7 +83,7 @@ resource "google_container_node_pool" "poc" {
   node_config {
     service_account = var.cluster_service_account
     spot            = false
-    machine_type    = var.machine_type.default
+    machine_type    = var.machine_type.large
     disk_size_gb    = var.disk_size.small
     tags            = ["gke-node"]
 
@@ -97,6 +103,14 @@ resource "google_container_node_pool" "poc" {
   }
 }
 
+resource "google_dns_record_set" "poc_k8s_a" {
+  name         = "${local.k8s_domain}."
+  managed_zone = "dados-rio"
+  type         = "A"
+  ttl          = 300
+  rrdatas      = [google_compute_address.poc_k8s.address]
+}
+
 module "deployments" {
   source = "./deployments"
 
@@ -106,13 +120,12 @@ module "deployments" {
   cluster_ca_certificate = local.cluster_ca_certificate
   cluster_endpoint       = local.cluster_endpoint
   cluster_issuer         = local.cert_manager_cluster_issuer
-  gatus_k8s_domain       = local.gatus_k8s_domain
   host                   = var.host
+  ingress_address        = google_compute_address.poc_k8s.address
+  k8s_domain             = local.k8s_domain
   loki_bucket_name       = local.loki_bucket_name
-  loki_k8s_domain        = local.loki_k8s_domain
   loki_password          = local.loki_password
   loki_user              = local.loki_user
   node_pool              = local.node_pool.name
   project_id             = var.project_id
-  prometheus_k8s_domain  = local.prometheus_k8s_domain
 }
