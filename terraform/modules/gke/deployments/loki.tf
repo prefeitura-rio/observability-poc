@@ -14,7 +14,7 @@ resource "google_storage_bucket_iam_binding" "loki" {
   members = ["serviceAccount:${google_service_account.loki.email}"]
 }
 
-resource "kubernetes_secret" "loki-secrects-gsa" {
+resource "kubernetes_secret" "loki_secrets_gsa" {
   depends_on = [helm_release.prometheus]
   metadata {
     name      = "loki-secrets-gsa"
@@ -25,8 +25,16 @@ resource "kubernetes_secret" "loki-secrects-gsa" {
   }
 }
 
+resource "google_dns_record_set" "poc_k8s_loki_cname" {
+  name         = "${local.loki_domain}."
+  managed_zone = "dados-rio"
+  type         = "CNAME"
+  ttl          = 300
+  rrdatas      = local.rrdatas
+}
+
 resource "helm_release" "loki" {
-  depends_on = [kubernetes_secret.loki-secrects-gsa]
+  depends_on = [kubernetes_secret.loki_secrets_gsa, google_dns_record_set.poc_k8s_loki_cname]
   version    = "6.29.0"
   name       = "loki"
   repository = "https://grafana.github.io/helm-charts"
@@ -35,46 +43,11 @@ resource "helm_release" "loki" {
   wait       = true
   timeout    = 600
   values = [templatefile("${path.module}/values/loki.yaml", {
-    cert_manager_cluster_issuer = var.cluster_issuer
-    password                    = var.loki_password
-    user                        = var.loki_user
-    domain                      = var.loki_k8s_domain
-    domain_tls_secret           = replace(var.loki_k8s_domain, ".", "-")
-    bucket_name                 = var.loki_bucket_name
+    bucket_name       = var.loki_bucket_name
+    domain            = local.loki_domain
+    domain_tls_secret = replace(local.loki_domain, ".", "-")
+    issuer            = var.cluster_issuer
+    password          = var.loki_password
+    user              = var.loki_user
   })]
-}
-
-resource "kubernetes_ingress_v1" "loki" {
-  metadata {
-    name      = "loki"
-    namespace = "prometheus"
-    annotations = {
-      "cert-manager.io/cluster-issuer" = var.cluster_issuer
-    }
-  }
-  spec {
-    ingress_class_name = "nginx"
-
-    tls {
-      hosts       = [var.loki_k8s_domain]
-      secret_name = replace(var.loki_k8s_domain, ".", "-")
-    }
-
-    rule {
-      host = var.loki_k8s_domain
-      http {
-        path {
-          path = "/"
-          backend {
-            service {
-              name = "loki"
-              port {
-                number = 3100
-              }
-            }
-          }
-        }
-      }
-    }
-  }
 }

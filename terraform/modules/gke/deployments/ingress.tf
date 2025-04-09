@@ -1,9 +1,4 @@
-resource "google_compute_address" "poc_ingress" {
-  name         = "poc-ingress"
-  address_type = "EXTERNAL"
-}
-
-resource "helm_release" "ingress-nginx" {
+resource "helm_release" "ingress_nginx" {
   depends_on       = [var.node_pool]
   name             = "ingress-nginx"
   repository       = "https://kubernetes.github.io/ingress-nginx"
@@ -12,6 +7,6 @@ resource "helm_release" "ingress-nginx" {
   namespace        = "ingress-nginx"
   create_namespace = true
   values = [templatefile("${path.module}/values/nginx.yaml", {
-    load_balancer_ip = google_compute_address.poc_ingress.address
+    load_balancer_ip = var.ingress_address
   })]
 }

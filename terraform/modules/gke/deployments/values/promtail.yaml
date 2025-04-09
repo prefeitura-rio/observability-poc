@@ -4,4 +4,4 @@ config:
         password: ${password}
         username: ${user}
       tenant_id: 1
-      url: http://loki-gateway/loki/api/v1/push
+      url: https://${loki_gateway}/loki/api/v1/push

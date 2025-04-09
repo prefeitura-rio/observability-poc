@@ -32,24 +32,9 @@ variable "loki_user" {
   description = "Username for Loki authentication"
 }
 
-variable "loki_k8s_domain" {
-  type        = string
-  description = "Loki k8s instance domain name"
-}
-
 variable "loki_bucket_name" {
   type        = string
   description = "GCS bucket name for Loki storage"
-}
-
-variable "gatus_k8s_domain" {
-  type        = string
-  description = "Gatus k8s instance domain name"
-}
-
-variable "prometheus_k8s_domain" {
-  type        = string
-  description = "Prometheus k8s instance domain name"
 }
 
 variable "cluster_endpoint" {
@@ -75,4 +60,14 @@ variable "cluster_ca_certificate" {
 variable "access_token" {
   type        = string
   description = "Access token for authentication"
+}
+
+variable "ingress_address" {
+  type        = string
+  description = "The static IP address for the ingress"
+}
+
+variable "k8s_domain" {
+  type        = string
+  description = "The domain name for the Kubernetes cluster"
 }

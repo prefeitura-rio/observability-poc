@@ -1,4 +1,4 @@
-resource "helm_release" "cert-manager" {
+resource "helm_release" "cert_manager" {
   depends_on       = [var.node_pool]
   name             = "cert-manager"
   repository       = "https://charts.jetstack.io"
@@ -12,7 +12,7 @@ resource "helm_release" "cert-manager" {
   }
 }
 
-resource "kubectl_manifest" "cluster-issuer" {
-  depends_on = [helm_release.cert-manager, helm_release.ingress-nginx]
+resource "kubectl_manifest" "cluster_issuer" {
+  depends_on = [helm_release.cert_manager, helm_release.ingress_nginx]
   yaml_body  = templatefile("${path.module}/manifests/cert-manager.yaml", { issuer = var.cluster_issuer })
 }

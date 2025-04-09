@@ -9,7 +9,21 @@ resource "helm_release" "prometheus" {
   values           = [file("${path.module}/values/prometheus.yaml")]
 }
 
+
+resource "google_dns_record_set" "poc_k8s_prometheus_cname" {
+  name         = "${local.prometheus_domain}."
+  managed_zone = "dados-rio"
+  type         = "CNAME"
+  ttl          = 300
+  rrdatas      = local.rrdatas
+}
+
 resource "kubernetes_ingress_v1" "prometheus" {
+  depends_on = [
+    helm_release.prometheus,
+    google_dns_record_set.poc_k8s_prometheus_cname,
+  ]
+
   metadata {
     name      = "prometheus"
     namespace = "prometheus"
@@ -21,12 +35,12 @@ resource "kubernetes_ingress_v1" "prometheus" {
     ingress_class_name = "nginx"
 
     tls {
-      hosts       = [var.prometheus_k8s_domain]
-      secret_name = replace(var.prometheus_k8s_domain, ".", "-")
+      hosts       = [local.prometheus_domain]
+      secret_name = replace(local.prometheus_domain, ".", "-")
     }
 
     rule {
-      host = var.prometheus_k8s_domain
+      host = local.prometheus_domain
       http {
         path {
           path = "/"

@@ -9,7 +9,21 @@ resource "helm_release" "gatus" {
   values           = [file("${path.module}/values/gatus.yaml")]
 }
 
+resource "google_dns_record_set" "poc_k8s_gatus_cname" {
+  name         = "${local.gatus_domain}."
+  managed_zone = "dados-rio"
+  type         = "CNAME"
+  ttl          = 300
+  rrdatas      = local.rrdatas
+}
+
 resource "kubernetes_ingress_v1" "gatus" {
+  depends_on = [
+    helm_release.gatus,
+    helm_release.ingress_nginx,
+    google_dns_record_set.poc_k8s_gatus_cname
+  ]
+
   metadata {
     name      = "gatus"
     namespace = "gatus"
@@ -21,12 +35,12 @@ resource "kubernetes_ingress_v1" "gatus" {
     ingress_class_name = "nginx"
 
     tls {
-      hosts       = [var.gatus_k8s_domain]
-      secret_name = replace(var.gatus_k8s_domain, ".", "-")
+      hosts       = [local.gatus_domain]
+      secret_name = replace(local.gatus_domain, ".", "-")
     }
 
     rule {
-      host = var.gatus_k8s_domain
+      host = local.gatus_domain
       http {
         path {
           path = "/"

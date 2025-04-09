@@ -5,6 +5,8 @@ resource "kubernetes_namespace_v1" "app_with_ingress" {
 }
 
 resource "kubernetes_deployment_v1" "app_with_ingress" {
+  depends_on = [kubernetes_namespace_v1.app_with_ingress]
+
   metadata {
     name      = "app-with-ingress"
     namespace = kubernetes_namespace_v1.app_with_ingress.metadata[0].name
@@ -56,6 +58,8 @@ resource "kubernetes_deployment_v1" "app_with_ingress" {
 }
 
 resource "kubernetes_service_v1" "app_with_ingress" {
+  depends_on = [kubernetes_deployment_v1.app_with_ingress, helm_release.ingress_nginx]
+
   metadata {
     name      = "app-with-ingress"
     namespace = kubernetes_namespace_v1.app_with_ingress.metadata[0].name
@@ -74,6 +78,7 @@ resource "kubernetes_service_v1" "app_with_ingress" {
 }
 
 resource "kubernetes_ingress_v1" "app_with_ingress" {
+  depends_on = [kubernetes_service_v1.app_with_ingress]
   metadata {
     name      = "app-with-ingress"
     namespace = kubernetes_namespace_v1.app_with_ingress.metadata[0].name
