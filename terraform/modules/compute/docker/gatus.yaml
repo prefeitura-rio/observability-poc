@@ -3,8 +3,12 @@ storage:
   path: /data/data.db
 
 endpoints:
-  - name: app
-    url: https://google.com
-    interval: 60s
+  - name: app-with-ingress
+    url: "https://app-with-ingress.poc-k8s.dados.rio"
     conditions:
       - "[STATUS] == 200"
+
+remote:
+  instances:
+    - endpoint-prefix: "poc-k8s-"
+      url: "https://gatus.poc-k8s.dados.rio/api/v1/endpoints/statuses"

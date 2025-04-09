@@ -98,7 +98,8 @@ resource "kubernetes_ingress_v1" "app_with_ingress" {
       host = var.host
       http {
         path {
-          path = "/"
+          path      = "/"
+          path_type = "Prefix"
           backend {
             service {
               name = kubernetes_service_v1.app_with_ingress.metadata[0].name

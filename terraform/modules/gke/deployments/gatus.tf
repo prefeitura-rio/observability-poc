@@ -43,7 +43,8 @@ resource "kubernetes_ingress_v1" "gatus" {
       host = local.gatus_domain
       http {
         path {
-          path = "/"
+          path      = "/"
+          path_type = "Prefix"
           backend {
             service {
               name = "gatus"
