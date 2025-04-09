@@ -27,13 +27,3 @@ variable "disk_size" {
   type        = number
   description = "The disk size in GB"
 }
-
-variable "ssh_public_key" {
-  type        = string
-  description = "The SSH public key content for the instance"
-}
-
-variable "ssh_private_key" {
-  type        = string
-  description = "Path to the SSH private key file"
-}

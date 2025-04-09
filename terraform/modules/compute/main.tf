@@ -1,5 +1,5 @@
-resource "google_compute_address" "poc" {
-  name         = "poc"
+resource "google_compute_address" "poc_vm" {
+  name         = "poc-vm"
   region       = var.region
   address_type = "EXTERNAL"
 }
@@ -22,50 +22,27 @@ resource "google_compute_instance" "poc" {
     subnetwork = var.vpc_subnetwork
 
     access_config {
-      nat_ip = google_compute_address.poc.address
+      nat_ip = google_compute_address.poc_vm.address
     }
   }
 
-  metadata = {
-    ssh-keys = "poc:${var.ssh_public_key}"
-  }
-
-  connection {
-    type        = "ssh"
-    user        = "poc"
-    private_key = var.ssh_private_key
-    host        = google_compute_address.poc.address
-  }
-
-  provisioner "file" {
-    source      = "./ansible/playbook.yaml"
-    destination = "~/poc/playbook.yaml"
-  }
-
-  provisioner "file" {
-    source      = "./ansible/requirements.yaml"
-    destination = "~/poc/requirements.yaml"
-  }
-
-  provisioner "file" {
-    source      = "./docker/docker-compose.yaml"
-    destination = "~/poc/docker-compose.yaml"
-  }
-
-  provisioner "file" {
-    source      = "./docker/gatus.yaml"
-    destination = "~/poc/gatus.yaml"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get update",
-      "sudo apt-get install -y python3 python3-pip",
-      "sudo pip3 install ansible",
-      "ansible-galaxy install -r ~/poc/requirements.yaml",
-      "ansible-playbook ~/poc/playbook.yaml"
-    ]
-  }
+  metadata_startup_script = file("${path.module}/scripts/init_vm.sh")
 
   tags = ["observability"]
+}
+
+resource "google_dns_record_set" "poc_vm_a" {
+  name         = "poc-vm.dados.rio."
+  managed_zone = "dados-rio"
+  type         = "A"
+  ttl          = 300
+  rrdatas      = [google_compute_address.poc_vm.address]
+}
+
+resource "google_dns_record_set" "poc_vm_cname" {
+  name         = "*.poc-vm.dados.rio."
+  managed_zone = "dados-rio"
+  type         = "CNAME"
+  ttl          = 300
+  rrdatas      = ["poc-vm.dados.rio."]
 }
