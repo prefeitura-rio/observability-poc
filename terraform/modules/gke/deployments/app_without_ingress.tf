@@ -59,7 +59,7 @@ resource "kubernetes_deployment_v1" "app_without_ingress" {
 }
 
 resource "kubernetes_service_v1" "app_without_ingress" {
-  depends_on = [kubernetes_deployment_v1.app_with_ingress]
+  depends_on = [kubernetes_deployment_v1.app_without_ingress]
   metadata {
     name      = "app-without-ingress"
     namespace = kubernetes_namespace_v1.app_without_ingress.metadata[0].name

@@ -15,6 +15,7 @@ services:
     restart: unless-stopped
     volumes:
       - grafana_data:/var/lib/grafana
+      - /poc/grafana.ini:/etc/grafana/grafana.ini
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.rule=Host(`grafana.poc-vm.dados.rio`)"
