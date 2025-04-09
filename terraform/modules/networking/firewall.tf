@@ -1,6 +1,6 @@
 resource "google_compute_firewall" "allow_ssh_gke" {
   name          = "allow-ssh"
-  network       = google_compute_network.poc.name
+  network       = google_compute_network.poc_network.name
   source_ranges = ["35.235.240.0/20"]
 
   allow {
@@ -11,7 +11,7 @@ resource "google_compute_firewall" "allow_ssh_gke" {
 
 resource "google_compute_firewall" "allow_gke_control_plane" {
   name          = "allow-gke-control-plane"
-  network       = google_compute_network.poc.name
+  network       = google_compute_network.poc_network.name
   source_ranges = ["35.235.240.0/20"]
 
   allow {
