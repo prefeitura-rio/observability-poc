@@ -4,7 +4,7 @@ metadata:
   name: ${issuer}
 spec:
   acme:
-    server: https://acme-v02.api.letsencrypt.org/directory
+    server: ${server}
     privateKeySecretRef:
       name: ${issuer}-key
     solvers:

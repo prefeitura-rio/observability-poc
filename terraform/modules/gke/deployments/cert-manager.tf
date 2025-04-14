@@ -14,5 +14,8 @@ resource "helm_release" "cert_manager" {
 
 resource "kubectl_manifest" "cluster_issuer" {
   depends_on = [helm_release.cert_manager, helm_release.ingress_nginx]
-  yaml_body  = templatefile("${path.module}/manifests/cert-manager.yaml", { issuer = var.cluster_issuer })
+  yaml_body = templatefile("${path.module}/manifests/cert-manager.yaml", {
+    issuer = var.cluster_issuer,
+    server = "https://acme-staging-v02.api.letsencrypt.org/directory"
+  })
 }
