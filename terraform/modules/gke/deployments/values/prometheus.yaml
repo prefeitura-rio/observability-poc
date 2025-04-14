@@ -1,11 +1,12 @@
-alertmanager:
-  enabled: false
-
 cleanPrometheusOperatorObjectNames: true
 fullnameOverride: prometheus
 
+alertmanager:
+  enabled: false
+
 grafana:
   enabled: false
+
 kubelet:
   serviceMonitor:
     metricRelabelings:
@@ -16,7 +17,19 @@ kubelet:
 
 prometheus:
   ingress:
-    enabled: false
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: ${issuer}
+    hosts:
+      - ${domain}
+    paths:
+      - /
+    pathType: Prefix
+    tls:
+      - hosts:
+          - ${domain}
+        secretName: ${domain_tls_secret}
   prometheusSpec:
     replicas: 1
     retention: 30d
@@ -28,13 +41,6 @@ prometheus:
             requests:
               storage: 300G
           storageClassName: standard
-    additionalScrapeConfigs:
-      - job_name: "loki"
-        static_configs:
-          - targets: ["loki.prometheus.svc.cluster.local:3100"]
-      - job_name: "promtail"
-        static_configs:
-          - targets: ["promtail.prometheus.svc.cluster.local:9080"]
 
 prometheus-node-exporter:
   prometheus:

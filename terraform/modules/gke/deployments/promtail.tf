@@ -1,5 +1,10 @@
 resource "helm_release" "promtail" {
-  depends_on       = [kubernetes_secret.loki_secrets_gsa]
+  depends_on = [
+    kubernetes_secret.loki_secrets_gsa,
+    helm_release.cert_manager,
+    helm_release.ingress_nginx,
+  ]
+
   version          = "6.16.6"
   name             = "promtail"
   repository       = "https://grafana.github.io/helm-charts"

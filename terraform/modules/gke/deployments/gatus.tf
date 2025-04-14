@@ -1,5 +1,15 @@
+locals {
+  gatus_domain     = "gatus.${var.k8s_domain}"
+  gatus_tls_secret = replace("${local.gatus_domain}-tls", ".", "-")
+}
+
 resource "helm_release" "gatus" {
-  depends_on       = [var.node_pool]
+  depends_on = [
+    var.node_pool,
+    helm_release.cert_manager,
+    helm_release.ingress_nginx,
+  ]
+
   name             = "gatus"
   repository       = "https://twin.github.io/helm-charts"
   chart            = "gatus"
@@ -8,7 +18,7 @@ resource "helm_release" "gatus" {
   create_namespace = true
   values = [templatefile("${path.module}/values/gatus.yaml", {
     issuer            = var.cluster_issuer
-    domain            = "gatus.${var.k8s_domain}"
-    domain_tls_secret = replace("${var.k8s_domain}-tls", ".", "-")
+    domain            = local.gatus_domain
+    domain_tls_secret = local.gatus_tls_secret
   })]
 }

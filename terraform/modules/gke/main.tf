@@ -85,7 +85,6 @@ resource "google_container_node_pool" "poc_k8s_node_pool" {
     spot            = false
     machine_type    = var.machine_type.large
     disk_size_gb    = var.disk_size.small
-    tags            = ["gke-node"]
 
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform",

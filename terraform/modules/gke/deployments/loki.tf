@@ -1,3 +1,8 @@
+locals {
+  loki_domain     = "loki.${var.k8s_domain}"
+  loki_tls_secret = replace("${local.loki_domain}-tls", ".", "-")
+}
+
 resource "google_service_account" "loki" {
   account_id   = "loki-poc"
   display_name = "loki-poc"
@@ -26,7 +31,12 @@ resource "kubernetes_secret" "loki_secrets_gsa" {
 }
 
 resource "helm_release" "loki" {
-  depends_on = [kubernetes_secret.loki_secrets_gsa]
+  depends_on = [
+    kubernetes_secret.loki_secrets_gsa,
+    helm_release.cert_manager,
+    helm_release.ingress_nginx,
+  ]
+
   version    = "6.29.0"
   name       = "loki"
   repository = "https://grafana.github.io/helm-charts"
@@ -36,8 +46,8 @@ resource "helm_release" "loki" {
   timeout    = 600
   values = [templatefile("${path.module}/values/loki.yaml", {
     bucket_name       = var.loki_bucket_name
-    domain            = "loki.${var.k8s_domain}"
-    domain_tls_secret = replace("${var.k8s_domain}-tls", ".", "-")
+    domain            = local.loki_domain
+    domain_tls_secret = local.loki_tls_secret
     issuer            = var.cluster_issuer
     password          = var.loki_password
     user              = var.loki_user
