@@ -1,3 +1,8 @@
+locals {
+  app_domain     = "app.${var.k8s_domain}"
+  app_tls_secret = replace("${local.app_domain}-tls", ".", "-")
+}
+
 resource "kubernetes_namespace_v1" "app" {
   metadata {
     name = "app"
@@ -163,12 +168,12 @@ resource "kubernetes_ingress_v1" "app_with_ingress" {
     ingress_class_name = "nginx"
 
     tls {
-      hosts       = ["app.${var.k8s_domain}"]
-      secret_name = replace("${var.k8s_domain}-tls", ".", "-")
+      hosts       = [local.app_domain]
+      secret_name = local.app_tls_secret
     }
 
     rule {
-      host = "app.${var.k8s_domain}"
+      host = local.app_domain
       http {
         path {
           path      = "/"
