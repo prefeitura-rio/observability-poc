@@ -9,12 +9,6 @@ variable "cluster_issuer" {
   description = "Cert-manager cluster issuer name"
 }
 
-variable "host" {
-  type        = string
-  nullable    = false
-  description = "Default ingress hostname"
-}
-
 variable "node_pool" {
   type        = string
   nullable    = false

@@ -25,16 +25,8 @@ resource "kubernetes_secret" "loki_secrets_gsa" {
   }
 }
 
-resource "google_dns_record_set" "poc_k8s_loki_cname" {
-  name         = "${local.loki_domain}."
-  managed_zone = "dados-rio"
-  type         = "CNAME"
-  ttl          = 300
-  rrdatas      = local.rrdatas
-}
-
 resource "helm_release" "loki" {
-  depends_on = [kubernetes_secret.loki_secrets_gsa, google_dns_record_set.poc_k8s_loki_cname]
+  depends_on = [kubernetes_secret.loki_secrets_gsa]
   version    = "6.29.0"
   name       = "loki"
   repository = "https://grafana.github.io/helm-charts"
@@ -44,8 +36,8 @@ resource "helm_release" "loki" {
   timeout    = 600
   values = [templatefile("${path.module}/values/loki.yaml", {
     bucket_name       = var.loki_bucket_name
-    domain            = local.loki_domain
-    domain_tls_secret = replace(local.loki_domain, ".", "-")
+    domain            = "loki.${var.k8s_domain}"
+    domain_tls_secret = replace("${var.k8s_domain}-tls", ".", "-")
     issuer            = var.cluster_issuer
     password          = var.loki_password
     user              = var.loki_user

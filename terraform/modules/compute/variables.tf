@@ -27,3 +27,8 @@ variable "disk_size" {
   type        = number
   description = "The disk size in GB"
 }
+
+variable "vm_domain" {
+  type        = string
+  description = "The domain name for the virtual machine"
+}

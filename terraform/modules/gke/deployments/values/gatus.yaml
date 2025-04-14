@@ -1,20 +1,16 @@
 ingress:
-  enabled: false
+  enabled: true
+  ingressClassName: nginx
   annotations:
-    {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  labels: {}
+    cert-manager.io/cluster-issuer: ${issuer}
   path: /
-  # pathType is only for k8s >= 1.1=
   pathType: Prefix
-  extraPaths: []
   hosts:
-    - gatus.local
-  tls: []
-  #  - secretName: gatus-tls
-  #    hosts:
-  #      - gatus.local
+    - ${domain}
+  tls:
+    - hosts:
+        - ${domain}
+      secretName: ${domain_tls_secret}
 
 persistence:
   enabled: true
@@ -27,8 +23,13 @@ persistence:
 
 config:
   endpoints:
-    - name: app
-      url: http://app.api.svc.cluster.local
+    - name: app-without-ingress
+      url: http://app-without-ingress.app.svc.cluster.local:8000
+      interval: 60s
+      conditions:
+        - "[STATUS] == 200"
+    - name: app-with-ingress
+      url: http://app-with-ingress.app.svc.cluster.local:8000
       interval: 60s
       conditions:
         - "[STATUS] == 200"

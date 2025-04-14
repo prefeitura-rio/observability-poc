@@ -9,5 +9,4 @@ locals {
   loki_password               = var.vault["LOKI_PASSWORD"].value
   loki_user                   = var.vault["LOKI_USER"].value
   node_pool                   = google_container_node_pool.poc_k8s_node_pool
-  k8s_domain                  = "poc-k8s.dados.rio"
 }

@@ -4,11 +4,11 @@ storage:
 
 endpoints:
   - name: app-with-ingress
-    url: "https://app-with-ingress.poc-k8s.dados.rio"
+    url: "https://poc-k8s.dados.rio/app"
     conditions:
       - "[STATUS] == 200"
 
 remote:
   instances:
     - endpoint-prefix: "poc-k8s-"
-      url: "https://gatus.poc-k8s.dados.rio/api/v1/endpoints/statuses"
+      url: "https://poc-k8s.dados.rio/gatus/api/v1/endpoints/statuses"

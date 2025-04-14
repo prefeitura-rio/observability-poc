@@ -104,10 +104,11 @@ disk_size = {
 
 After deployment, the following endpoints will be available:
 
-- Prometheus: `https://prometheus.poc-k8s.dados.rio`
-- Loki: `https://loki.poc-k8s.dados.rio`
 - Gatus: `https://gatus.poc-k8s.dados.rio`
 - Grafana: `https://grafana.poc-vm.dados.rio`
+- Loki: `https://loki.poc-k8s.dados.rio`
+- Prometheus: `https://prometheus.poc-k8s.dados.rio`
+- Sample app: `https://app.poc-k8s.dados.rio`
 
 ## Maintenance
 

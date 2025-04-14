@@ -43,7 +43,7 @@ gateway:
     tls:
       - hosts:
           - ${domain}
-        secretName: ${domain_tls_secret}-tls
+        secretName: ${domain_tls_secret}
 
 deploymentMode: SingleBinary
 singleBinary:

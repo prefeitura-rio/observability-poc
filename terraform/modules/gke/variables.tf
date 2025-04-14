@@ -34,10 +34,9 @@ variable "disk_size" {
   description = "Disk size configurations"
 }
 
-variable "host" {
+variable "k8s_domain" {
   type        = string
-  nullable    = false
-  description = "Default ingress hostname"
+  description = "The domain name for the Kubernetes cluster"
 }
 
 variable "vault" {

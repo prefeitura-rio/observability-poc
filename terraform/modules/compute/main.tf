@@ -32,7 +32,7 @@ resource "google_compute_instance" "poc" {
 }
 
 resource "google_dns_record_set" "poc_vm_a" {
-  name         = "poc-vm.dados.rio."
+  name         = "${var.vm_domain}."
   managed_zone = "dados-rio"
   type         = "A"
   ttl          = 300
@@ -40,9 +40,9 @@ resource "google_dns_record_set" "poc_vm_a" {
 }
 
 resource "google_dns_record_set" "poc_vm_cname" {
-  name         = "*.poc-vm.dados.rio."
+  name         = "*.${var.vm_domain}."
   managed_zone = "dados-rio"
   type         = "CNAME"
   ttl          = 300
-  rrdatas      = ["poc-vm.dados.rio."]
+  rrdatas      = ["${var.vm_domain}."]
 }
