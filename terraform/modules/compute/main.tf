@@ -4,6 +4,38 @@ resource "google_compute_address" "poc_vm" {
   address_type = "EXTERNAL"
 }
 
+resource "google_service_account" "traefik" {
+  account_id   = "traefik-poc"
+  display_name = "traefik-poc"
+  project      = var.project_id
+}
+
+resource "google_project_iam_custom_role" "traefik" {
+  role_id     = "traefik"
+  title       = "Traefik DNS Manager"
+  description = "Custom role for Traefik DNS management"
+  permissions = [
+    "dns.resourceRecordSets.create",
+    "dns.resourceRecordSets.delete",
+    "dns.resourceRecordSets.list",
+    "dns.resourceRecordSets.update",
+    "dns.changes.create",
+    "dns.changes.get",
+    "dns.changes.list",
+    "dns.managedZones.list"
+  ]
+}
+
+resource "google_project_iam_member" "traefik" {
+  project = var.project_id
+  role    = google_project_iam_custom_role.traefik.id
+  member  = "serviceAccount:${google_service_account.traefik.email}"
+}
+
+resource "google_service_account_key" "traefik" {
+  service_account_id = google_service_account.traefik.name
+}
+
 resource "google_compute_instance" "poc" {
   name         = "poc"
   machine_type = var.machine_type
@@ -26,9 +58,11 @@ resource "google_compute_instance" "poc" {
     }
   }
 
-  metadata_startup_script = file("${path.module}/scripts/init_vm.sh")
-
-  tags = ["observability"]
+  metadata_startup_script = templatefile("${path.module}/scripts/init_vm.sh", {
+    service_account_email = google_service_account.traefik.email
+    service_account_key   = base64decode(google_service_account_key.traefik.private_key)
+    gce_project           = var.project_id
+  })
 }
 
 resource "google_dns_record_set" "poc_vm_a" {

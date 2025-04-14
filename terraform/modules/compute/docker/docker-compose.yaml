@@ -1,4 +1,30 @@
 services:
+  traefik:
+    image: traefik:latest
+    restart: unless-stopped
+    ports:
+      - "443:443"
+      - "80:80"
+    command:
+      - "--log.level=DEBUG"
+      - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.web.address=:80"
+      - "--entryPoints.websecure.address=:443"
+      - "--certificatesresolvers.gcloud.acme.tlschallenge=true"
+      - "--certificatesresolvers.gcloud.acme.email=${GCE_SERVICE_ACCOUNT_EMAIL}"
+      - "--certificatesresolvers.gcloud.acme.storage=/letsencrypt/acme.json"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+    environment:
+      - "GCE_PROJECT=${GCE_PROJECT}"
+      - "GCE_SERVICE_ACCOUNT_FILE=/run/secrets/gcloud.json"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt:/letsencrypt
+    secrets:
+      - source: gcloud_key
+        target: gcloud.json
   gatus:
     image: twinproduction/gatus:latest
     restart: unless-stopped
@@ -7,11 +33,12 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.gatus.rule=Host(`gatus.poc-vm.dados.rio`)"
-      - "traefik.http.routers.gatus.service=gatus"
-      - "traefik.http.routers.gatus.entrypoints=web"
+      - "traefik.http.routers.gatus.entrypoints=websecure"
+      - "traefik.http.routers.gatus.tls=true"
+      - "traefik.http.routers.gatus.tls.certresolver=gcloud"
       - "traefik.http.services.gatus.loadbalancer.server.port=8080"
   grafana:
-    image: grafana/grafana-oss
+    image: grafana/grafana-oss:latest
     restart: unless-stopped
     volumes:
       - grafana_data:/var/lib/grafana
@@ -19,26 +46,15 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.rule=Host(`grafana.poc-vm.dados.rio`)"
-      - "traefik.http.routers.grafana.service=grafana"
-      - "traefik.http.routers.grafana.entrypoints=web"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.routers.grafana.tls.certresolver=gcloud"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
-  traefik:
-    image: traefik:latest
-    restart: unless-stopped
-    ports:
-      - 443:443
-      - 80:80
-    command:
-      - "--api.insecure=true"
-      - "--entryPoints.web.address=:80"
-      - "--entryPoints.websecure.address=:443"
-      - "--log.level=DEBUG"
-      - "--providers.docker"
-      - "--providers.docker.exposedbydefault=false"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - letsencrypt_data:/letsencrypt
 
 volumes:
   grafana_data: {}
-  letsencrypt_data: {}
+  letsencrypt: {}
+
+secrets:
+  gcloud_key:
+    file: /poc/secrets/gcloud.json
