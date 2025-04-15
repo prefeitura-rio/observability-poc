@@ -4,6 +4,10 @@ bucket := "bucket=datario-terraform"
 
 default: plan apply
 
+@auth:
+    gcloud auth application-default login
+    gcloud auth login
+
 @init:
     terraform init -backend-config {{bucket}} -upgrade
 
