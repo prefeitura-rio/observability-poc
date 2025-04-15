@@ -4,14 +4,12 @@ This repository contains Terraform configurations to deploy a production-ready G
 
 ## Table of Contents
 
-- [Features](#features)
 - [Architecture](#architecture)
+- [Features](#features)
+- [Key Configuration](#key-configuration)
+- [Components](#components)
 - [Prerequisites](#prerequisites)
 - [Deployment](#deployment)
-- [Accessing Services](#accessing-services)
-- [Maintenance](#maintenance)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
 
 ## Architecture
 
