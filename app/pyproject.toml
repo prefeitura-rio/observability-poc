@@ -8,8 +8,14 @@ dependencies = [
   "httpx>=0.28.1",
   "opentelemetry-api>=1.31.1",
   "opentelemetry-exporter-otlp>=1.31.1",
+  "opentelemetry-exporter-prometheus>=0.52b1",
   "opentelemetry-instrumentation-fastapi>=0.52b1",
   "opentelemetry-instrumentation-httpx>=0.52b1",
   "opentelemetry-instrumentation-logging>=0.52b1",
   "opentelemetry-sdk>=1.31.1",
 ]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 120
+indent-width = 4

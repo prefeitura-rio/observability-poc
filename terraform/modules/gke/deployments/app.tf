@@ -15,8 +15,15 @@ resource "kubernetes_deployment_v1" "app_with_ingress" {
   metadata {
     name      = "app-with-ingress"
     namespace = kubernetes_namespace_v1.app.metadata[0].name
+
     labels = {
       app = "app-with-ingress"
+    }
+
+    annotations = {
+      "prometheus.io/scrape" : "true"
+      "prometheus.io/port" : "9464"
+      "prometheus.io/path" : "/metrics"
     }
   }
 
@@ -41,9 +48,39 @@ resource "kubernetes_deployment_v1" "app_with_ingress" {
           image = "ghcr.io/prefeitura-rio/observability-poc/app:latest"
           name  = "app-with-ingress"
 
+          env {
+            name  = "OTEL_METRICS_EXPORTER"
+            value = "otlp"
+          }
+
+          env {
+            name  = "OTEL_LOGS_EXPORTER"
+            value = "otlp"
+          }
+
+          env {
+            name  = "OTEL_EXPORTER_OTLP_LOGS_ENDPOINT"
+            value = "${local.loki_gateway}/loki/api/v1/push"
+          }
+
+          env {
+            name  = "OTEL_SERVICE_NAME"
+            value = "app-with-ingress"
+          }
+
+          env {
+            name  = "OTEL_EXPORTER_OTLP_HEADERS"
+            value = "Authorization=Basic ${base64encode("${var.loki_user}:${var.loki_password}")}"
+          }
+
           port {
             container_port = 8000
             name           = "http"
+          }
+
+          port {
+            container_port = 9464
+            name           = "metrics"
           }
 
           resources {
@@ -68,8 +105,15 @@ resource "kubernetes_deployment_v1" "app_without_ingress" {
   metadata {
     name      = "app-without-ingress"
     namespace = kubernetes_namespace_v1.app.metadata[0].name
+
     labels = {
       app = "app-without-ingress"
+    }
+
+    annotations = {
+      "prometheus.io/scrape" : "true"
+      "prometheus.io/port" : "9464"
+      "prometheus.io/path" : "/metrics"
     }
   }
 
@@ -94,10 +138,35 @@ resource "kubernetes_deployment_v1" "app_without_ingress" {
           image = "ghcr.io/prefeitura-rio/observability-poc/app:latest"
           name  = "app-without-ingress"
 
+          env {
+            name  = "OTEL_METRICS_EXPORTER"
+            value = "otlp"
+          }
+
+          env {
+            name  = "OTEL_LOGS_EXPORTER"
+            value = "otlp"
+          }
+
+          env {
+            name  = "OTEL_EXPORTER_OTLP_LOGS_ENDPOINT"
+            value = "${local.loki_gateway}/loki/api/v1/push"
+          }
+
+          env {
+            name  = "OTEL_SERVICE_NAME"
+            value = "app-without-ingress"
+          }
+
           port {
             container_port = 8000
             name           = "http"
 
+          }
+
+          port {
+            container_port = 9464
+            name           = "metrics"
           }
 
           resources {

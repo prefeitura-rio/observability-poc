@@ -1,6 +1,7 @@
 locals {
   loki_domain     = "loki.${var.k8s_domain}"
   loki_tls_secret = replace("${local.loki_domain}-tls", ".", "-")
+  loki_gateway    = "${helm_release.loki.metadata[0].name}-gateway.${helm_release.loki.metadata[0].namespace}.svc.cluster.local:80"
 }
 
 resource "google_service_account" "loki" {
