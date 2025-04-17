@@ -58,6 +58,10 @@ The infrastructure consists of:
   - Loki with GCS backend storage
   - Log retention policies
   - Multi-tenant support
+- **Telemetry**:
+  - OpenTelemetry Collector for metrics and logs collection
+  - Automatic instrumentation for Python applications
+  - OTLP exporter configuration
 - **Visualization**:
   - Grafana with pre-configured dashboards
   - SSO integration
@@ -114,6 +118,7 @@ disk_size = {
 - Loki (logs) at `loki.poc-k8s.dados.rio`
 - Gatus (status pages) at `gatus.poc-vm.dados.rio`
 - Grafana (dashboards) at `grafana.poc-vm.dados.rio`
+- OpenTelemetry Collector
 
 ### Supporting Services
 
