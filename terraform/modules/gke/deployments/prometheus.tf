@@ -1,6 +1,7 @@
 locals {
   prometheus_domain     = "prometheus.${var.k8s_domain}"
   prometheus_tls_secret = replace("${local.prometheus_domain}-tls", ".", "-")
+  prometheus            = "prometheus-prometheus.prometheus.svc.cluster.local"
 }
 
 resource "helm_release" "prometheus" {
@@ -20,5 +21,6 @@ resource "helm_release" "prometheus" {
     issuer            = var.cluster_issuer
     domain            = local.prometheus_domain
     domain_tls_secret = local.prometheus_tls_secret
+    url               = local.prometheus
   })]
 }

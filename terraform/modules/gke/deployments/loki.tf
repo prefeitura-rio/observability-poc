@@ -1,7 +1,6 @@
 locals {
   loki_domain     = "loki.${var.k8s_domain}"
   loki_tls_secret = replace("${local.loki_domain}-tls", ".", "-")
-  loki_gateway    = "${helm_release.loki.metadata[0].name}-gateway.${helm_release.loki.metadata[0].namespace}.svc.cluster.local:80"
 }
 
 resource "google_service_account" "loki" {
@@ -20,11 +19,16 @@ resource "google_storage_bucket_iam_binding" "loki" {
   members = ["serviceAccount:${google_service_account.loki.email}"]
 }
 
+resource "kubernetes_namespace_v1" "loki" {
+  metadata {
+    name = "loki"
+  }
+}
+
 resource "kubernetes_secret" "loki_secrets_gsa" {
-  depends_on = [helm_release.prometheus]
   metadata {
     name      = "loki-secrets-gsa"
-    namespace = "prometheus"
+    namespace = "loki"
   }
   data = {
     "gcp_service_account.json" = base64decode(google_service_account_key.loki.private_key)
@@ -42,7 +46,7 @@ resource "helm_release" "loki" {
   name       = "loki"
   repository = "https://grafana.github.io/helm-charts"
   chart      = "loki"
-  namespace  = "prometheus"
+  namespace  = "loki"
   wait       = true
   timeout    = 600
   values = [templatefile("${path.module}/values/loki.yaml", {
@@ -50,7 +54,5 @@ resource "helm_release" "loki" {
     domain            = local.loki_domain
     domain_tls_secret = local.loki_tls_secret
     issuer            = var.cluster_issuer
-    password          = var.loki_password
-    user              = var.loki_user
   })]
 }

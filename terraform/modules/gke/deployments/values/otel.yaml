@@ -1,0 +1,39 @@
+mode: ${mode}
+
+command:
+  name: otelcol-k8s
+
+image:
+  repository: otel/opentelemetry-collector-k8s
+  tag: 0.123.0
+
+config:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+  exporters:
+    otlphttp/prometheus:
+      endpoint: http://${prometheus}:9090/api/v1/otlp
+      tls:
+        insecure: true
+    otlphttp/loki:
+      endpoint: http://${loki}/otlp
+      tls:
+        insecure: true
+  extensions:
+    health_check:
+      endpoint: 0.0.0.0:13133
+  service:
+    extensions:
+      - health_check
+    pipelines:
+      metrics:
+        receivers: [otlp]
+        exporters: [otlphttp/prometheus]
+      logs:
+        receivers: [otlp]
+        exporters: [otlphttp/loki]

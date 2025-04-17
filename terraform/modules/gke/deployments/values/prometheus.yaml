@@ -1,5 +1,5 @@
-cleanPrometheusOperatorObjectNames: true
 fullnameOverride: prometheus
+cleanPrometheusOperatorObjectNames: true
 
 alertmanager:
   enabled: false
@@ -31,31 +31,16 @@ prometheus:
           - ${domain}
         secretName: ${domain_tls_secret}
   prometheusSpec:
-    replicas: 1
-    retention: 30d
-    retentionSize: 250GB
+    enableRemoteWriteReceiver: true
     storageSpec:
       volumeClaimTemplate:
         spec:
           resources:
             requests:
-              storage: 300G
+              storage: 50G
           storageClassName: standard
-
-prometheus-node-exporter:
-  prometheus:
-    monitor:
-      relabelings:
-        - action: replace
-          regex: ^(.*)$
-          replacement: $1
-          separator: ;
-          sourceLabels:
-            - __meta_kubernetes_pod_node_name
-          targetLabel: node
-        - action: replace
-          regex: (.*)
-          replacement: $1
-          sourceLabels:
-            - __meta_kubernetes_pod_node_name
-          targetLabel: kubernetes_node
+    additionalArgs:
+      - name: web.enable-otlp-receiver
+        value: ""
+    remoteWrite:
+      - url: "${url}:9090/api/v1/write"
