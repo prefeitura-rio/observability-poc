@@ -1,39 +1,49 @@
 # Observability Stack on GKE
 
+- [Architecture Overview](#architecture-overview)
+- [Key Features](#key-features)
+  - [Cloud Infrastructure](#cloud-infrastructure)
+  - [Observability Tooling](#observability-tooling)
+  - [Security & Operations](#security-operations)
+- [Resource Configuration](#resource-configuration)
+  - [Machine Types](#machine-types)
+  - [Disk Sizes](#disk-sizes)
+- [Deployed Components](#deployed-components)
+  - [Infrastructure Resources](#infrastructure-resources)
+  - [Observability Services](#observability-services)
+  - [Supporting Platform Services](#supporting-platform-services)
+- [Prerequisites](#prerequisites)
+  - [Cloud Requirements](#cloud-requirements)
+  - [Local Development Environment](#local-development-environment)
+  - [Optional Utilities](#optional-utilities)
+- [Deployment Instructions](#deployment-instructions)
+  - [Initial Setup](#initial-setup)
+
 This repository contains Terraform configurations to deploy a production-ready Google Kubernetes Engine (GKE) cluster with a comprehensive observability stack on Google Cloud Platform.
 
-## Table of Contents
-
-- [Architecture](#architecture)
-- [Features](#features)
-- [Key Configuration](#key-configuration)
-- [Components](#components)
-- [Prerequisites](#prerequisites)
-- [Deployment](#deployment)
-
-## Architecture
+## Architecture Overview
 
 ![System Architecture](./diagram.png)
 
 The infrastructure consists of:
 
-1. **Core Components**:
+1. **Core Infrastructure**:
    - GKE Cluster with auto-scaling node pools
    - VPC Network with private subnets
    - Compute Engine instances for auxiliary services
-2. **Observability Stack**:
+2. **Observability Components**:
    - **Metrics**: Prometheus with long-term storage
    - **Logging**: Loki with GCS backend
    - **Visualization**: Grafana dashboards
    - **Uptime Monitoring**: Gatus status pages
-3. **Supporting Services**:
+3. **Platform Services**:
    - NGINX Ingress Controller
    - cert-manager with Let's Encrypt
    - Automated DNS management
 
-## Features
+## Key Features
 
-### Core Infrastructure
+### Cloud Infrastructure
 
 - **GKE Cluster**: Production-grade Kubernetes cluster with:
   - Auto-scaling node pools
@@ -48,7 +58,7 @@ The infrastructure consists of:
   - SSD persistent disks
   - Automatic DNS registration
 
-### Observability Stack
+### Observability Tooling
 
 - **Metrics**:
   - Prometheus with 15-day retention
@@ -65,7 +75,7 @@ The infrastructure consists of:
 - **Visualization**:
   - Grafana with pre-configured dashboards
   - SSO integration
-- **Uptime Monitoring**:
+- **Status Monitoring**:
   - Gatus with SLA tracking
   - Public status pages
 
@@ -84,7 +94,7 @@ The infrastructure consists of:
   - CNAME aliases
   - TXT records for DNS-01 challenges
 
-## Key Configuration
+## Resource Configuration
 
 ### Machine Types
 
@@ -104,15 +114,15 @@ disk_size = {
 }
 ```
 
-## Components
+## Deployed Components
 
-### Core Infrastructure
+### Infrastructure Resources
 
 - GKE Cluster with node pools
 - VPC Network and Subnets
 - Compute Engine instances (Ubuntu 24.04 LTS)
 
-### Monitoring Stack
+### Observability Services
 
 - Prometheus (metrics) at `prometheus.poc-k8s.dados.rio`
 - Loki (logs) at `loki.poc-k8s.dados.rio`
@@ -120,7 +130,7 @@ disk_size = {
 - Grafana (dashboards) at `grafana.poc-vm.dados.rio`
 - OpenTelemetry Collector
 
-### Supporting Services
+### Supporting Platform Services
 
 - NGINX Ingress Controller
 - cert-manager with Let's Encrypt integration
@@ -140,7 +150,7 @@ disk_size = {
   - DNS Zone Administrator role for `dados-rio` zone
   - Service Account with required permissions
 
-### Local Development
+### Local Development Environment
 
 - **Terraform** 1.5+ ([installation guide](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli))
 - **Google Cloud SDK** ([installation guide](https://cloud.google.com/sdk/docs/install))
@@ -150,11 +160,11 @@ disk_size = {
   - Environment profile configured
   - Secrets path properly set
 
-### Optional Tools
+### Optional Utilities
 
 - [just](https://github.com/casey/just) - Command runner for simplified workflows
 
-## Deployment
+## Deployment Instructions
 
 ### Initial Setup
 
@@ -175,21 +185,32 @@ disk_size = {
    bucket            = "your-gcs-bucket"     # For Loki storage
    ```
 
-### Provisioning Infrastructure
+3. Set up your Google Cloud credentials:
 
-3. Initialize Terraform and providers:
+   ```bash
+   just auth
+   ```
+
+4. Initialize Terraform and providers:
 
    ```bash
    just init
    ```
 
-4. Review planned changes:
+5. Install helm charts:
+
+   ```bash
+   just helm
+   ```
+
+6. Review planned changes:
 
    ```bash
    just plan
    ```
 
-5. Apply the configuration:
+7. Apply the configuration:
+
    ```bash
    just apply
    ```
