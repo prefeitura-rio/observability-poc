@@ -4,6 +4,15 @@ bucket := "bucket=datario-terraform"
 
 default: plan apply
 
+@helm:
+    helm repo add cert-manager https://charts.jetstack.io
+    helm repo add gatus https://twin.github.io/helm-charts
+    helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+    helm repo add loki https://grafana.github.io/helm-charts
+    helm repo add opentelemetry-collector https://open-telemetry.github.io/opentelemetry-helm-charts
+    helm repo add prometheus https://prometheus-community.github.io/helm-charts
+    helm repo update
+
 @auth:
     gcloud auth application-default login
     gcloud auth login
